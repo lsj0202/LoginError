@@ -16,7 +16,7 @@ const Login = () => {
 
       const exchangeCodeForToken = async () => {
         try {
-          const res = await axios.get(
+          const {data} = await axios.get(
             `http://10.150.149.154:8080/login/oauth2/code/google?${params}`,
             {},
             {
@@ -25,13 +25,11 @@ const Login = () => {
               }
             }
           );
+          console.log(data)
+            const { accessToken, refreshToken } = data; 
 
-          console.log(res);
-          //   const { access, refresh } = response.data.token;
-          //   localStorage.setItem('accessToken', access);
-          //   localStorage.setItem('refreshToken', refresh);
-
-          //   console.log('Access token', access);
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
         } catch (error) {
           console.log(error);
         }
