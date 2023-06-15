@@ -1,50 +1,59 @@
-import axios from 'axios';
-import React, { useEffect } from 'react';
+import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Login = () => {
-  useEffect(() => {
-    // const urlParams = new URLSearchParams(window.location.search);
-    const params = window.location.search;
+    const [code, setCode] = useState("");
+    const location = useLocation();
 
-    const code = params.substring(params.indexOf('?code=') + 6, params.indexOf('&'));
+    console.log("sdfsf");
+    console.log(location);
+    useEffect(() => {
+        const params = window.location.search;
 
-    console.log(code);
+        const code = params.substring(
+            params.indexOf("?code=") + 6,
+            params.indexOf("&")
+        );
 
-    if (code) {
-      const params = new URLSearchParams();
-      params.append('code', code);
+        console.log(code);
 
-      const exchangeCodeForToken = async () => {
-        try {
-          const {data} = await axios.get(
-            `http://10.150.149.154:8080/login/oauth2/code/google?${params}`,
-            {},
-            {
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-              }
-            }
-          );
-          console.log(data)
-            const { accessToken, refreshToken } = data; 
+        if (code) {
+            const exchangeCodeForToken = async () => {
+                try {
+                    const response = await axios.get(
+                        `http://10.150.149.154:8080/login/oauth2/code/google?code=${code}`,
+                        {
+                            headers: {
+                                "Content-Type":
+                                    "application/x-www-form-urlencoded",
+                            },
+                        }
+                    );
 
-            localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('refreshToken', refreshToken);
-        } catch (error) {
-          console.log(error);
+                    const { accessToken, refreshToken } = response.data;
+
+                    localStorage.setItem("accessToken", accessToken);
+                    localStorage.setItem("refreshToken", refreshToken);
+
+                    console.log("Access Token:", accessToken);
+                    console.log("Refresh Token:", refreshToken);
+                    console.log(response);
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+
+            exchangeCodeForToken();
         }
-      };
+    }, []);
 
-      exchangeCodeForToken();
-    }
-  }, []);
-
-  return (
-    <div>
-      <span>로그인결과창</span>
-      <a href="/">돌아가기</a>
-    </div>
-  );
+    return (
+        <div>
+            <span>로그인결과창</span>
+            <a href="/">돌아가기</a>
+        </div>
+    );
 };
 
 export default Login;
